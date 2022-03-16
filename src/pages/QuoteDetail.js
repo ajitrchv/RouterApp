@@ -36,7 +36,7 @@ const QuoteDetail = () =>
     const quote = DUMMY_q.find(quote => quote.id === params.quoteId);
     if(!quote)
     {
-      return <p>No Quote Found!</p>
+      return <h1>No Quote Found!</h1>
     }
     return <Fragment>
     <HighlightedQuote text={quote.text} author={quote.author}/>

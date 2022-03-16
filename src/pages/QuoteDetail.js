@@ -1,7 +1,8 @@
-import { useParams,Route } from "react-router-dom";
+import { useParams, Route, Link } from "react-router-dom";
 import { Fragment } from "react/cjs/react.production.min";
 import Comments from '../components/comments/Comments.js';
 import HighlightedQuote from "../components/quotes/HighlightedQuote.js";
+//import classes from '../components/quotes/QuoteItem.module.css';
 const DUMMY_q = [
   {
       id:'q1',
@@ -40,6 +41,15 @@ const QuoteDetail = () =>
     }
     return <Fragment>
     <HighlightedQuote text={quote.text} author={quote.author}/>
+    <Route path={`/quotes/${params.quoteId}`} exact>
+    <div className="centered">
+            <Link to={`/quotes/${params.quoteId}/comments`} className='btn--flat' >
+                Load Comments
+            </Link>
+    </div>
+    </Route>
+    
+    
     <Route path={`/quotes/${params.quoteId}/comments`}>
         <Comments></Comments>
       </Route>

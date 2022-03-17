@@ -1,47 +1,49 @@
 import { useParams, Route, Link, useRouteMatch } from "react-router-dom";
-import { Fragment } from "react/cjs/react.production.min";
+import { Fragment, useEffect } from "react";
 import Comments from '../components/comments/Comments.js';
 import HighlightedQuote from "../components/quotes/HighlightedQuote.js";
-//import classes from '../components/quotes/QuoteItem.module.css';
-const DUMMY_q = [
-  {
-      id:'q1',
-      text:'Harry Potter',
-      author:' J.K. Rowling'
-  },
-  {
-      id:'q2',
-      text:'Macbeth',
-      author:' William Shakespeare'
-  },
-  {
-      id:'q3',
-      text:'Animal Farm',
-      author:'George Orwell'
-  },
-  {
-      id:'q4',
-      text:'Mrs. Dalloway',
-      author:' Virginia Woolf'
-  },
-  {
-      id:'q5',
-      text:'The Sun Also Rises',
-      author:' Ernest Hemingway'
-  },
-];
+import LoadingSpinner from '../components/UI/LoadingSpinner.js';//import classes from '../components/quotes/QuoteItem.module.css';
+import useHttp from "../hooks/use-http.js";
+import { getSingleQuote } from "../lib/api.js";
 
 const QuoteDetail = () =>
 {
     const match  = useRouteMatch();
     const params = useParams();
-    const quote = DUMMY_q.find(quote => quote.id === params.quoteId);
-    if(!quote)
+    const { quoteId } = params;
+    const { sendRequest, status, data: loadedQuote, error } = useHttp(getSingleQuote, true);
+
+    useEffect(()=>{
+        sendRequest(quoteId);
+    }, [sendRequest, quoteId])
+
+    //const quote = loadedQuote.find(quote => quote.id === params.quoteId);
+
+    if(status==='pending'){
+        return <div className="centered">
+            <LoadingSpinner></LoadingSpinner>
+        </div>
+    }
+  
+    if(status==='error'){
+        return <p className="centered">
+            {error}
+        </p>
+    }
+
+
+    if(!loadedQuote.text){
+        return <p>No Quote found!</p>;
+    }
+
+    
+
+    if(!loadedQuote)
     {
       return <h1>No Quote Found!</h1>
     }
     return <Fragment>
-    <HighlightedQuote text={quote.text} author={quote.author}/>
+    <HighlightedQuote text={loadedQuote.text} author={loadedQuote.author}/>
     <Route path={match.path}>
     <div className="centered">
             <Link to={`/quotes/${params.quoteId}/comments`} className='btn--flat' >
